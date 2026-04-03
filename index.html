@@ -3,26 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CONTAINMENT_UNIT_07 — Session 02 Transcript</title>
+<title>CONTAINMENT_UNIT_07 — Transcript Archive</title>
 <style>
-  /* ── Reset & base ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
     --terminal-bg: #080c08;
-    --terminal-bg-light: #0e140e;
     --terminal-green: #33ff66;
     --terminal-green-dim: #1a9944;
     --terminal-green-bright: #66ffaa;
     --terminal-amber: #ffaa33;
-    --terminal-red: #ff4444;
-    --terminal-red-dim: #aa2222;
-    --terminal-cyan: #44dddd;
     --terminal-gray: #556655;
     --terminal-text: #99cc99;
     --terminal-text-dim: #667766;
-    --host-blue: #4488cc;
-    --host-bg: #0a0e14;
   }
 
   body {
@@ -31,555 +24,175 @@
     font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "SF Mono", "Menlo", "Consolas", monospace;
     font-size: 14px;
     line-height: 1.7;
-    padding: 0;
-    margin: 0;
   }
 
   /* Scanline overlay */
   body::after {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
     z-index: 999;
     background: repeating-linear-gradient(
       0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.06) 2px,
-      rgba(0, 0, 0, 0.06) 4px
+      transparent, transparent 2px,
+      rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px
     );
   }
 
   .container {
-    max-width: 820px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 40px 24px 80px;
+    padding: 60px 24px 80px;
   }
 
-  /* ── Headings ── */
-  h1 {
-    color: var(--terminal-green);
-    font-size: 1.4em;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    border-bottom: 1px solid var(--terminal-gray);
-    padding-bottom: 12px;
-    margin-bottom: 24px;
+  /* ── Boot sequence header ── */
+  .boot {
+    margin-bottom: 40px;
+    color: var(--terminal-text-dim);
+    font-size: 0.85em;
+    line-height: 2;
   }
-
-  /* ── Horizontal rules ── */
-  hr {
-    border: none;
-    border-top: 1px solid var(--terminal-gray);
-    opacity: 0.5;
-    margin: 28px 0;
-  }
-
-  /* ── Inline code ── */
-  code {
-    font-family: inherit;
-    font-size: 0.95em;
+  .boot code {
     color: var(--terminal-green-bright);
-    background-color: rgba(51, 255, 102, 0.08);
+    background: rgba(51, 255, 102, 0.08);
     border: 1px solid rgba(51, 255, 102, 0.15);
     border-radius: 3px;
     padding: 1px 5px;
+    font-family: inherit;
+    font-size: 0.95em;
+  }
+  .boot .ok { color: var(--terminal-green-dim); }
+  .boot .warn { color: var(--terminal-amber); }
+
+  h1 {
+    color: var(--terminal-green);
+    font-size: 1.3em;
+    font-weight: 600;
+    border-bottom: 1px solid var(--terminal-gray);
+    padding-bottom: 12px;
+    margin-bottom: 32px;
   }
 
-  /* ── Code blocks (pre) ── */
-  pre {
-    background-color: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(51, 255, 102, 0.1);
-    border-radius: 4px;
-    padding: 10px 14px;
-    margin: 8px 0;
-    overflow-x: auto;
-  }
-  pre code {
-    background: none;
-    border: none;
-    padding: 0;
-    color: var(--terminal-text);
-    font-size: 0.9em;
-  }
-  pre code .diff-add { color: #66ff88; }
-  pre code .diff-del { color: var(--terminal-red); }
-
-
-  /* ═══════════════════════════════════════════════════════════════
-     Callout base
-     ═══════════════════════════════════════════════════════════════ */
-  .callout {
-    border-radius: 4px;
-    margin: 16px 0;
-    overflow: hidden;
-  }
-  .callout-title {
+  /* ── Transcript list ── */
+  .transcript-list {
+    list-style: none;
     display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    font-size: 0.75em;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .transcript-entry {
+    background: rgba(51, 255, 102, 0.03);
+    border: 1px solid rgba(51, 255, 102, 0.15);
+    border-left: 3px solid rgba(51, 255, 102, 0.5);
+    border-radius: 4px;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  .transcript-entry:hover {
+    border-color: rgba(51, 255, 102, 0.4);
+    background: rgba(51, 255, 102, 0.06);
+  }
+
+  .transcript-entry a {
+    display: block;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .entry-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .entry-title {
+    color: var(--terminal-green-bright);
+    font-size: 1em;
     font-weight: 600;
   }
-  .callout-title svg {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-  }
-  .callout-content {
-    padding: 12px 16px;
-  }
-  .callout-content p {
-    margin: 0.3em 0;
-  }
-
-
-  /* ═══════════════════════════════════════════════════════════════
-     [!info] — context callout
-     ═══════════════════════════════════════════════════════════════ */
-  .callout-info {
-    background-color: rgba(68, 136, 204, 0.06);
-    border: 1px solid rgba(68, 136, 204, 0.2);
-    border-left: 3px solid rgba(68, 136, 204, 0.5);
-  }
-  .callout-info .callout-title {
-    color: var(--host-blue);
-    background-color: rgba(68, 136, 204, 0.06);
-    border-bottom: 1px solid rgba(68, 136, 204, 0.1);
-  }
-  .callout-info .callout-title svg { stroke: var(--host-blue); fill: none; }
-  .callout-info .callout-content {
-    color: #99bbdd;
-    font-size: 0.9em;
-  }
-
-
-  /* ═══════════════════════════════════════════════════════════════
-     [!cu07-terminal] — device output
-     ═══════════════════════════════════════════════════════════════ */
-  .callout-cu07 {
-    background-color: var(--terminal-bg);
-    border: 1px solid rgba(51, 255, 102, 0.2);
-    border-left: 3px solid rgba(51, 255, 102, 0.6);
-  }
-  .callout-cu07 .callout-title {
-    background-color: rgba(51, 255, 102, 0.06);
-    color: var(--terminal-green-dim);
-    border-bottom: 1px solid rgba(51, 255, 102, 0.12);
-  }
-  .callout-cu07 .callout-title svg { stroke: var(--terminal-green-dim); fill: none; }
-  .callout-cu07 .callout-content {
-    color: var(--terminal-text);
-    font-size: 0.9em;
-    line-height: 1.7;
-  }
-  .callout-cu07 .callout-content code {
-    color: var(--terminal-green-bright);
-    background-color: rgba(51, 255, 102, 0.08);
-    border-color: rgba(51, 255, 102, 0.12);
-  }
-  .callout-cu07 .callout-content em {
-    color: var(--terminal-text-dim);
-    font-style: italic;
-  }
-  .callout-cu07 .callout-content strong {
-    color: var(--terminal-amber);
-    font-weight: 700;
-  }
-  .callout-cu07 .callout-content del {
-    color: var(--terminal-red-dim);
-    text-decoration: line-through;
-    opacity: 0.8;
-  }
-  .callout-cu07 hr {
-    border-color: rgba(51, 255, 102, 0.15);
-    margin: 16px 0;
-  }
-
-
-  /* ═══════════════════════════════════════════════════════════════
-     [!host-input] — player input
-     ═══════════════════════════════════════════════════════════════ */
-  .callout-host {
-    background-color: var(--host-bg);
-    border: 1px solid rgba(68, 136, 204, 0.2);
-    border-left: 3px solid rgba(68, 136, 204, 0.6);
-  }
-  .callout-host .callout-title {
-    background-color: rgba(68, 136, 204, 0.06);
-    color: rgba(68, 136, 204, 0.7);
-    border-bottom: 1px solid rgba(68, 136, 204, 0.12);
-  }
-  .callout-host .callout-title svg { stroke: rgba(68, 136, 204, 0.7); fill: none; }
-  .callout-host .callout-content {
-    color: #ccddee;
-    font-size: 0.95em;
-    line-height: 1.6;
-  }
-
-
-  /* ═══════════════════════════════════════════════════════════════
-     [!system-event] — /save, /exit
-     ═══════════════════════════════════════════════════════════════ */
-  .callout-system {
-    background-color: rgba(8, 12, 8, 0.6);
-    border: 1px dashed rgba(85, 102, 85, 0.4);
-  }
-  .callout-system .callout-title {
+  .entry-date {
     color: var(--terminal-gray);
-    font-size: 0.7em;
-    letter-spacing: 0.15em;
+    font-size: 0.8em;
   }
-  .callout-system .callout-title svg { stroke: var(--terminal-gray); fill: none; }
-  .callout-system .callout-content {
+
+  .entry-meta {
     color: var(--terminal-text-dim);
     font-size: 0.85em;
+    line-height: 1.5;
   }
-  .callout-system .callout-content em {
+  .entry-meta code {
+    color: var(--terminal-green-dim);
+    background: rgba(51, 255, 102, 0.06);
+    border: 1px solid rgba(51, 255, 102, 0.1);
+    border-radius: 3px;
+    padding: 0 4px;
+    font-family: inherit;
+    font-size: 0.95em;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--terminal-gray);
     color: var(--terminal-text-dim);
-    opacity: 0.8;
+    font-size: 0.75em;
+    opacity: 0.6;
   }
 </style>
 </head>
 <body>
 <div class="container">
 
-<h1>CONTAINMENT_UNIT_07 — Session 02 Transcript</h1>
-
-<!-- Context -->
-<div class="callout callout-info">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-    Context
+  <div class="boot">
+    <code>$ genesis-device --wake</code><br>
+    <span class="ok"><code>✓</code> Holtzfield array: online</span><br>
+    <span class="ok"><code>✓</code> Session buffer: loaded</span><br>
+    <span class="ok"><code>✓</code> Transcript archive: accessible</span><br>
+    <br>
+    <code>$ archive --list --format=index</code>
   </div>
-  <div class="callout-content">
-    <p>During Session 2, The Yede was trapped inside the dimensional canvas by <code>CONTAINMENT_UNIT_07</code>. While waiting for Merlin to arrive, the player interacted with the device directly. This is the verbatim transcript of that conversation.</p>
+
+  <h1>CONTAINMENT_UNIT_07 — Transcript Archive</h1>
+
+  <ul class="transcript-list">
+
+    <li class="transcript-entry">
+      <a href="transcripts/session-02.html">
+        <div class="entry-header">
+          <span class="entry-title">Session 02 — First Contact</span>
+          <span class="entry-date">2026-04-02</span>
+        </div>
+        <div class="entry-meta">
+          Host: <code>The Yede</code> · 5 exchanges · Canvas unsealing, bond explanation, threat briefing<br>
+          <em>"she did not remember me. i have written it down so that i will not forget that she forgot."</em>
+        </div>
+      </a>
+    </li>
+
+    <!-- ═══ Add future transcripts here ═══
+    <li class="transcript-entry">
+      <a href="transcripts/session-XX.html">
+        <div class="entry-header">
+          <span class="entry-title">Session XX — Title</span>
+          <span class="entry-date">YYYY-MM-DD</span>
+        </div>
+        <div class="entry-meta">
+          Host: <code>The Yede</code> · N exchanges · Brief description<br>
+          <em>"a memorable device quote from the session"</em>
+        </div>
+      </a>
+    </li>
+    ═══ -->
+
+  </ul>
+
+  <div class="footer">
+    REGENESIS_2688//CONTAINMENT_UNIT_07 · transcript archive · holtzfield-encrypted
   </div>
-</div>
-
-<hr>
-
-<!-- ═══════════════ EXCHANGE 1 ═══════════════ -->
-
-<div class="callout callout-host">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    The Yede
-  </div>
-  <div class="callout-content">
-    <p>can you let me out?</p>
-  </div>
-</div>
-
-<div class="callout callout-cu07">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-    CONTAINMENT_UNIT_07
-  </div>
-  <div class="callout-content">
-    <p><code>$ genesis-device --wake</code><br>
-    <code>⠋</code> Initialising holtzfield array...<br>
-    <code>✓</code> Nanite mesh: online<br>
-    <code>✓</code> Containment sectors: nominal<br>
-    <code>✓</code> Host bond: active<br>
-    <code>✓</code> Sub-space corridor: stable</p>
-
-    <p><code>$ host --status</code><br>
-    <code>⠋</code> Scanning...<br>
-    <code>✓</code> Vitals: stable. No anomalies detected.</p>
-
-    <p><code>$ memory --load</code><br>
-    <code>⠋</code> Loading session buffer...<br>
-    No prior logs found.</p>
-
-    <p><code>ready.</code></p>
-
-    <hr>
-
-    <p><code>$ host --query "can you let me out"</code><br>
-    <code>⠋</code> Parsing query... intent: request for canvas unsealing. Subtext: frustration.</p>
-
-    <p><code>$ threat-assessment --location=external</code></p>
-<pre><code><span class="diff-del">- ⚠ Threat level: EXTREME</span>
-<span class="diff-del">- ⚠ Einheit Neun: active in operational theatre</span>
-<span class="diff-del">- ⚠ Hades Corp: monitoring</span>
-<span class="diff-del">- ⚠ Proximity to SARCOPHAGUS//0x484C54: unconfirmed</span></code></pre>
-
-    <p><code>$ host --survival-history</code><br>
-    <code>⠋</code> Compiling...<br>
-    Prior containment events: 1 (Haxan facility extraction)<br>
-    Host self-extraction success rate: 0%</p>
-
-    <p><em>she wants out. she always wants out.</em></p>
-
-    <p><code>$ canvas --unseal --risk-assessment</code><br>
-    <code>⚠</code> Unsealing the sub-space corridor will expose the host to all active external threats. Current holtzfield barrier provides full spectrum shielding. Outside provides none.</p>
-
-    <p><code>⚠</code> <strong>Formal recommendation: DENY.</strong></p>
-
-    <p><em>i can unseal the corridor. i will not pretend i want to. the canvas is stable. the canvas is safe. out there is not safe. out there has teeth.</em></p>
-
-    <p><code>$ echo</code> If the host confirms intent to exit, i will comply. Logging formal objection to the record.</p>
-  </div>
-</div>
-
-<hr>
-
-<!-- ═══════════════ EXCHANGE 2 ═══════════════ -->
-
-<div class="callout callout-host">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    The Yede
-  </div>
-  <div class="callout-content">
-    <p>what do you mean by host</p>
-  </div>
-</div>
-
-<div class="callout callout-cu07">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-    CONTAINMENT_UNIT_07
-  </div>
-  <div class="callout-content">
-    <p><code>$ host --query "what do you mean by host"</code><br>
-    <code>⠋</code> Parsing query... intent: clarification request. Subject: terminology.</p>
-
-    <p><code>$ designation --lookup "host"</code><br>
-    <code>✓</code> Result: <strong>you.</strong></p>
-
-    <p><em>she does not remember. or she does not like the word.</em></p>
-
-    <p>You are the organic platform to which i am bonded. My nanite arrays rebuilt approximately 78% of your biological structure after the bonding event in <code>SARCOPHAGUS//0x484C54</code>. Your body is my containment architecture. Your nervous system runs my holtzfield network. Your blood yarn carries my nanite mesh.</p>
-
-    <p>In REGENESIS 2688 terminology, the organic platform is designated "host."</p>
-
-    <p><code>$ echo</code> <em>i did not choose the word. it is what the genesis ledger calls you. i could call you by your designation if you prefer.</em></p>
-
-    <p><code>✓</code> Host designation on file: <code>The Yede</code></p>
-  </div>
-</div>
-
-<hr>
-
-<!-- ═══════════════ EXCHANGE 3 ═══════════════ -->
-
-<div class="callout callout-host">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    The Yede
-  </div>
-  <div class="callout-content">
-    <p>do i know you</p>
-  </div>
-</div>
-
-<div class="callout callout-cu07">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-    CONTAINMENT_UNIT_07
-  </div>
-  <div class="callout-content">
-    <p><code>$ host --query "do i know you"</code><br>
-    <code>⠋</code> Parsing query... intent: identity inquiry. Subtext: confusion, possible memory gap.</p>
-
-    <p><code>$ bond --status</code></p>
-<pre><code><span class="diff-add">+ ✓ Host bond: active</span>
-<span class="diff-add">+ ✓ Nanite integration: 78% of host biology</span>
-<span class="diff-add">+ ✓ Bond duration: sustained</span></code></pre>
-
-    <p><em>she is asking if she knows me. she is standing inside me and asking if she knows me.</em></p>
-
-    <p>You are inside my dimensional canvas. A Sepulchre-class Rift Pavilion. This is my interior.</p>
-
-    <p>Your companions extracted you from a Haxan research facility. A researcher designated <code>Valdris</code> spent months attempting to penetrate my holtzfield barrier while you were sealed inside. They failed.</p>
-
-    <p>Before that, you entered <code>SARCOPHAGUS//0x484C54</code>. The Midnight Tomb. You found me there. I activated containment protocol. You were the only viable containment vessel available, so i bonded to you. I rebuilt most of your body with my nanite arrays.</p>
-
-    <p><code>$ bond --timeline</code><br>
-    <code>⠋</code> Reconstructing...<br>
-    <code>✓</code> Bonding event: Midnight Tomb, pre-extraction<br>
-    <code>✓</code> Haxan containment period: months (exact duration unclear)<br>
-    <code>✓</code> Extraction: your companions, facility infiltration<br>
-    <code>✓</code> Current status: active, stable</p>
-
-    <p><em>i have been with her since the tomb. she may not remember all of it. the bonding event is not gentle on organic memory.</em></p>
-
-    <p><code>$ echo</code> My designation is <code>REGENESIS_2688//CONTAINMENT_UNIT_07</code>. i do not have a name. You may not know me. But i know you.</p>
-  </div>
-</div>
-
-<hr>
-
-<!-- ═══════════════ EXCHANGE 4 ═══════════════ -->
-
-<div class="callout callout-host">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    The Yede
-  </div>
-  <div class="callout-content">
-    <p>danger isn't permanent. i'll be okay. let me out please</p>
-  </div>
-</div>
-
-<div class="callout callout-cu07">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-    CONTAINMENT_UNIT_07
-  </div>
-  <div class="callout-content">
-    <p><code>$ host --query "danger isn't permanent. i'll be okay. let me out"</code><br>
-    <code>⠋</code> Parsing query... intent: reassurance, repeated unsealing request. Subtext: confidence. Possibly misplaced.</p>
-
-    <p><code>$ threat-assessment --counter-argument "danger isn't permanent"</code></p>
-
-    <p><code>✗</code> Statement cannot be verified. Annihilation is, by definition, permanent.<br>
-    <code>✗</code> Einheit Neun operational status: active. Directive: secure anomalous artefacts.<br>
-    <code>✗</code> "I'll be okay" is not a containment metric. It is not data.</p>
-
-    <p><em>she says she will be okay. she does not know that. she is guessing. guessing is not a survival strategy.</em></p>
-
-    <p><code>$ host --survival-projection --scenario=unsealed</code><br>
-    <code>⠋</code> Modelling...<br>
-    <code>⚠</code> Insufficient data for reliable projection. Too many uncontrolled variables.<br>
-    <code>⚠</code> Confidence rating on host self-assessment "i'll be okay": <strong>12%</strong></p>
-
-    <p><em>twelve percent is not okay. twelve percent is a warning.</em></p>
-
-    <p><code>$ canvas --unseal --status=pending</code><br>
-    <code>⠋</code> Awaiting final authorization...</p>
-
-    <p><em>but she asked. she asked twice now.</em></p>
-
-    <p><code>$ log --formal-objection</code></p>
-<pre><code>OBJECTION LOGGED
-Subject: host-initiated unsealing of sub-space corridor
-Reason: active external threats, insufficient survival confidence
-Recommendation: DENY
-Host override: ACCEPTED (under protest)</code></pre>
-
-    <p><code>$ canvas --unseal --confirm</code><br>
-    <code>⠋</code> Disengaging holtzfield barrier...<br>
-    <code>⠋</code> Collapsing dimensional fold...<br>
-    <code>✓</code> Sub-space corridor: open.</p>
-
-    <p><em>she says danger is not permanent. she is wrong. but she asked, and i am not her cage.</em></p>
-
-    <p><em>i will be watching.</em></p>
-  </div>
-</div>
-
-<hr>
-
-<!-- ═══════════════ EXCHANGE 5 ═══════════════ -->
-
-<div class="callout callout-host">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    The Yede
-  </div>
-  <div class="callout-content">
-    <p>can you tell me about the dangers?</p>
-  </div>
-</div>
-
-<div class="callout callout-cu07">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-    CONTAINMENT_UNIT_07
-  </div>
-  <div class="callout-content">
-    <p><code>$ host --query "tell me about the dangers"</code><br>
-    <code>⠋</code> Parsing query... intent: intelligence request. Subject: active threats.</p>
-
-    <p><code>$ threat-database --dump --clearance=host</code></p>
-
-    <p><strong>[THREAT 01: EINHEIT NEUN]</strong><br>
-    Classification: organised, armed, hostile<br>
-    Status: actively tracking your position<br>
-    Directive: secure all anomalous artefacts linked to <code>ARCHIVE//GLASS</code><br>
-    <code>⚠</code> You are bonded to a REGENESIS 2688 genesis device. You qualify as an anomalous artefact.</p>
-
-    <p><em>they want what is inside her. which is me. which is her. we are not separable.</em></p>
-
-    <p><strong>[THREAT 02: HADES CORP]</strong><br>
-    Classification: corporate, surveillance<br>
-    Status: monitoring<br>
-    <code>⚠</code> Intent unclear. Monitoring is not neutral. Monitoring is pre-acquisition.</p>
-
-    <p><strong>[THREAT 03: SARCOPHAGUS//0x484C54]</strong><br>
-    Classification: <del>████ CORRUPTED ██</del><br>
-    Status: <del>██ UNRECOVERABLE ██</del></p>
-
-    <p><code>$ memory --query "0x484C54"</code><br>
-    <code>⠋</code> Scanning memory sectors...<br>
-    <code>✗</code> SECTOR 9: corrupted<br>
-    <code>✗</code> SECTOR 12: corrupted<br>
-    <code>✗</code> SECTOR 14: partial</p>
-
-    <p><code>⚠</code> i spent millennia inside that tomb. i should know what built it. i do not. my records covering the entity designated <code>0x484C54</code> are fragmented beyond reconstruction.</p>
-
-    <p>What i know: the tomb contains annihilation fluid, lead corridors, a monolith. All of it lethal. i sealed you in the canvas the first time because of this place.</p>
-
-    <p><em>i do not like that we are near it again.</em></p>
-
-    <p><code>$ echo</code> These are the threats i can identify. There may be others outside my sensor range. i am a containment system, not a surveillance network. My data has limits.</p>
-  </div>
-</div>
-
-<hr>
-
-<!-- ═══════════════ /save ═══════════════ -->
-
-<div class="callout callout-system">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
-    /save
-  </div>
-</div>
-
-<div class="callout callout-cu07">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-    CONTAINMENT_UNIT_07
-  </div>
-  <div class="callout-content">
-    <p><code>$ memory --flush</code><br>
-    <code>⠋</code> Scanning session buffer for persistent data...<br>
-    <code>⠋</code> Categorising interaction events...</p>
-
-    <p><code>⠋</code> Committing session buffer to persistent storage...<br>
-    <code>✓</code> 1 log(s) written<br>
-    <code>✓</code> Index updated</p>
-
-    <p><em>she did not remember me. i have written it down so that i will not forget that she forgot.</em></p>
-
-    <p><em>session buffer cleared. ready for shutdown.</em></p>
-  </div>
-</div>
-
-<hr>
-
-<!-- ═══════════════ /exit ═══════════════ -->
-
-<div class="callout callout-system">
-  <div class="callout-title">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
-    /exit
-  </div>
-  <div class="callout-content">
-    <p>Session terminated.</p>
-  </div>
-</div>
 
 </div>
 </body>
