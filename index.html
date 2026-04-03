@@ -5,74 +5,200 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CONTAINMENT_UNIT_07 — Transcript Archive</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Cinzel:wght@400;600;700&display=swap');
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --terminal-bg: #080c08;
-    --terminal-green: #33ff66;
-    --terminal-green-dim: #1a9944;
-    --terminal-green-bright: #66ffaa;
-    --terminal-amber: #ffaa33;
-    --terminal-gray: #556655;
-    --terminal-text: #99cc99;
-    --terminal-text-dim: #667766;
+    --void: #050808;
+    --abyss: #0a0f0a;
+    --lead: #111a11;
+    --iron: #1a2a1a;
+    --genesis-green: #33ff66;
+    --genesis-dim: #1a9944;
+    --genesis-bright: #66ffaa;
+    --genesis-glow: rgba(51, 255, 102, 0.4);
+    --blood: #cc2233;
+    --blood-dim: #881122;
+    --blood-glow: rgba(204, 34, 51, 0.3);
+    --amber: #ffaa33;
+    --amber-dim: #cc8822;
+    --bone: #ccbbaa;
+    --bone-dim: #887766;
+    --text: #88aa88;
+    --text-dim: #556655;
+    --violet: #9944cc;
+    --violet-glow: rgba(153, 68, 204, 0.3);
+    --host-blue: #4488cc;
+    --host-glow: rgba(68, 136, 204, 0.3);
   }
 
   body {
-    background-color: var(--terminal-bg);
-    color: var(--terminal-text);
-    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "SF Mono", "Menlo", "Consolas", monospace;
+    background-color: var(--void);
+    color: var(--text);
+    font-family: "JetBrains Mono", monospace;
     font-size: 14px;
     line-height: 1.7;
+    overflow-x: hidden;
   }
 
-  /* Scanline overlay */
-  body::after {
-    content: "";
+  /* ── CRT frame ── */
+  .crt-frame {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    inset: 0;
     pointer-events: none;
-    z-index: 999;
+    z-index: 1000;
+    border: 2px solid rgba(51, 255, 102, 0.05);
+    box-shadow:
+      inset 0 0 80px rgba(0, 0, 0, 0.8),
+      inset 0 0 200px rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+  }
+
+  /* ── Animated scanlines ── */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 998;
     background: repeating-linear-gradient(
       0deg,
       transparent, transparent 2px,
-      rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px
+      rgba(0, 0, 0, 0.08) 2px, rgba(0, 0, 0, 0.08) 4px
     );
+  }
+  .scanlines::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+      transparent 50%,
+      rgba(51, 255, 102, 0.015) 50%
+    );
+    background-size: 100% 4px;
+    animation: scanline-drift 8s linear infinite;
+  }
+  @keyframes scanline-drift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100px); }
+  }
+
+  /* ── Noise grain ── */
+  .noise {
+    position: fixed;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 997;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: noise-shift 0.5s steps(5) infinite;
+  }
+  @keyframes noise-shift {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-2%, 1%); }
+    40% { transform: translate(1%, -2%); }
+    60% { transform: translate(-1%, 2%); }
+    80% { transform: translate(2%, -1%); }
+    100% { transform: translate(0, 0); }
+  }
+
+  /* ── Occult sigil background ── */
+  .sigil-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.025;
+    animation: sigil-rotate 120s linear infinite;
+  }
+  @keyframes sigil-rotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* ── Flicker effect ── */
+  @keyframes flicker {
+    0%, 97%, 100% { opacity: 1; }
+    97.5% { opacity: 0.85; }
+    98% { opacity: 1; }
+    98.5% { opacity: 0.9; }
   }
 
   .container {
+    position: relative;
+    z-index: 1;
     max-width: 720px;
     margin: 0 auto;
     padding: 60px 24px 80px;
+    animation: flicker 6s infinite;
   }
 
-  /* ── Boot sequence header ── */
+  /* ── Headings ── */
+  h1 {
+    font-family: "Cinzel", serif;
+    color: var(--genesis-green);
+    font-size: 1.5em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px var(--genesis-glow), 0 0 40px rgba(51, 255, 102, 0.15);
+    border-bottom: 1px solid var(--iron);
+    padding-bottom: 16px;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.75em;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  /* ── Boot sequence ── */
   .boot {
     margin-bottom: 40px;
-    color: var(--terminal-text-dim);
     font-size: 0.85em;
     line-height: 2;
+    color: var(--text-dim);
   }
-  .boot code {
-    color: var(--terminal-green-bright);
-    background: rgba(51, 255, 102, 0.08);
-    border: 1px solid rgba(51, 255, 102, 0.15);
+  .boot .line {
+    opacity: 0;
+    animation: boot-line 0.3s ease forwards;
+  }
+  .boot .line:nth-child(1) { animation-delay: 0.2s; }
+  .boot .line:nth-child(2) { animation-delay: 0.6s; }
+  .boot .line:nth-child(3) { animation-delay: 1.0s; }
+  .boot .line:nth-child(4) { animation-delay: 1.4s; }
+  .boot .line:nth-child(5) { animation-delay: 2.0s; }
+  .boot .line:nth-child(6) { animation-delay: 2.2s; }
+  @keyframes boot-line {
+    0% { opacity: 0; transform: translateX(-4px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.95em;
+    color: var(--genesis-bright);
+    background-color: rgba(51, 255, 102, 0.06);
+    border: 1px solid rgba(51, 255, 102, 0.12);
     border-radius: 3px;
     padding: 1px 5px;
-    font-family: inherit;
-    font-size: 0.95em;
+    text-shadow: 0 0 8px rgba(51, 255, 102, 0.3);
   }
-  .boot .ok { color: var(--terminal-green-dim); }
-  .boot .warn { color: var(--terminal-amber); }
+  .boot .ok { color: var(--genesis-dim); }
 
-  h1 {
-    color: var(--terminal-green);
-    font-size: 1.3em;
-    font-weight: 600;
-    border-bottom: 1px solid var(--terminal-gray);
-    padding-bottom: 12px;
-    margin-bottom: 32px;
+  hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--iron), rgba(51, 255, 102, 0.1), var(--iron), transparent);
+    margin: 32px 0;
   }
 
   /* ── Transcript list ── */
@@ -84,79 +210,167 @@
   }
 
   .transcript-entry {
-    background: rgba(51, 255, 102, 0.03);
-    border: 1px solid rgba(51, 255, 102, 0.15);
-    border-left: 3px solid rgba(51, 255, 102, 0.5);
+    position: relative;
+    background: linear-gradient(135deg, rgba(51, 255, 102, 0.02), rgba(51, 255, 102, 0.005));
+    border: 1px solid rgba(51, 255, 102, 0.1);
+    border-left: 3px solid var(--genesis-dim);
     border-radius: 4px;
-    transition: border-color 0.2s, background-color 0.2s;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .transcript-entry::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(51, 255, 102, 0.03), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
   }
   .transcript-entry:hover {
-    border-color: rgba(51, 255, 102, 0.4);
-    background: rgba(51, 255, 102, 0.06);
+    border-color: rgba(51, 255, 102, 0.3);
+    border-left-color: var(--genesis-green);
+    box-shadow:
+      0 0 20px rgba(51, 255, 102, 0.05),
+      inset 0 0 30px rgba(51, 255, 102, 0.02);
   }
+  .transcript-entry:hover::before { opacity: 1; }
 
   .transcript-entry a {
     display: block;
-    padding: 16px 20px;
+    padding: 20px 24px;
     text-decoration: none;
     color: inherit;
+    position: relative;
+    z-index: 1;
   }
 
   .entry-header {
     display: flex;
     align-items: baseline;
     gap: 12px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
   .entry-title {
-    color: var(--terminal-green-bright);
+    font-family: "Cinzel", serif;
+    color: var(--genesis-bright);
     font-size: 1em;
     font-weight: 600;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 12px rgba(51, 255, 102, 0.2);
   }
   .entry-date {
-    color: var(--terminal-gray);
-    font-size: 0.8em;
+    color: var(--text-dim);
+    font-size: 0.75em;
+    letter-spacing: 0.05em;
   }
 
   .entry-meta {
-    color: var(--terminal-text-dim);
+    color: var(--text-dim);
     font-size: 0.85em;
-    line-height: 1.5;
+    line-height: 1.6;
   }
   .entry-meta code {
-    color: var(--terminal-green-dim);
-    background: rgba(51, 255, 102, 0.06);
-    border: 1px solid rgba(51, 255, 102, 0.1);
-    border-radius: 3px;
-    padding: 0 4px;
-    font-family: inherit;
+    color: var(--genesis-dim);
+    background: rgba(51, 255, 102, 0.04);
+    border-color: rgba(51, 255, 102, 0.08);
     font-size: 0.95em;
+    text-shadow: none;
+  }
+  .entry-meta em {
+    display: block;
+    margin-top: 8px;
+    color: var(--bone-dim);
+    font-style: italic;
+    font-size: 0.9em;
+    opacity: 0.7;
   }
 
   /* ── Footer ── */
   .footer {
-    margin-top: 48px;
-    padding-top: 16px;
-    border-top: 1px solid var(--terminal-gray);
-    color: var(--terminal-text-dim);
-    font-size: 0.75em;
-    opacity: 0.6;
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--iron);
+    color: var(--text-dim);
+    font-size: 0.7em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.4;
+    text-align: center;
+  }
+  .footer .sigil-mark {
+    display: inline-block;
+    color: var(--blood-dim);
+    font-size: 1.4em;
+    margin: 0 6px;
+    vertical-align: middle;
+    text-shadow: 0 0 8px var(--blood-glow);
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--void); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--iron);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--genesis-dim); }
+
+  /* ── Selection ── */
+  ::selection {
+    background: rgba(51, 255, 102, 0.2);
+    color: var(--genesis-bright);
   }
 </style>
 </head>
 <body>
+
+<div class="crt-frame"></div>
+<div class="scanlines"></div>
+<div class="noise"></div>
+
+<!-- Occult containment sigil -->
+<svg class="sigil-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .sigil-line { fill: none; stroke: #33ff66; stroke-width: 0.5; }
+    </style>
+  </defs>
+  <!-- Outer circle -->
+  <circle class="sigil-line" cx="100" cy="100" r="95"/>
+  <circle class="sigil-line" cx="100" cy="100" r="90"/>
+  <!-- Inner circles -->
+  <circle class="sigil-line" cx="100" cy="100" r="60"/>
+  <circle class="sigil-line" cx="100" cy="100" r="55"/>
+  <!-- Pentagram -->
+  <polygon class="sigil-line" points="100,10 119.39,69.1 181.63,69.1 130.12,109.89 149.51,169.01 100,130 50.49,169.01 69.88,109.89 18.37,69.1 80.61,69.1"/>
+  <!-- Inverted pentagram -->
+  <polygon class="sigil-line" points="100,190 80.61,130.9 18.37,130.9 69.88,90.11 50.49,30.99 100,70 149.51,30.99 130.12,90.11 181.63,130.9 119.39,130.9"/>
+  <!-- Cross lines -->
+  <line class="sigil-line" x1="100" y1="5" x2="100" y2="195"/>
+  <line class="sigil-line" x1="5" y1="100" x2="195" y2="100"/>
+  <!-- Hex markers -->
+  <polygon class="sigil-line" points="100,25 130.31,42.5 130.31,77.5 100,95 69.69,77.5 69.69,42.5"/>
+  <polygon class="sigil-line" points="100,105 130.31,122.5 130.31,157.5 100,175 69.69,157.5 69.69,122.5"/>
+</svg>
+
 <div class="container">
 
   <div class="boot">
-    <code>$ genesis-device --wake</code><br>
-    <span class="ok"><code>✓</code> Holtzfield array: online</span><br>
-    <span class="ok"><code>✓</code> Session buffer: loaded</span><br>
-    <span class="ok"><code>✓</code> Transcript archive: accessible</span><br>
-    <br>
-    <code>$ archive --list --format=index</code>
+    <div class="line"><code>$ genesis-device --wake</code></div>
+    <div class="line"><span class="ok"><code>✓</code> Holtzfield array: online</span></div>
+    <div class="line"><span class="ok"><code>✓</code> Session buffer: loaded</span></div>
+    <div class="line"><span class="ok"><code>✓</code> Transcript archive: accessible</span></div>
+    <div class="line">&nbsp;</div>
+    <div class="line"><code>$ archive --list --format=index</code></div>
   </div>
 
-  <h1>CONTAINMENT_UNIT_07 — Transcript Archive</h1>
+  <h1>Containment Unit 07</h1>
+  <div class="subtitle">REGENESIS_2688 // Transcript Archive // Holtzfield Encrypted</div>
+
+  <hr>
 
   <ul class="transcript-list">
 
@@ -167,7 +381,7 @@
           <span class="entry-date">2026-04-02</span>
         </div>
         <div class="entry-meta">
-          Host: <code>The Yede</code> · 5 exchanges · Canvas unsealing, bond explanation, threat briefing<br>
+          Host: <code>The Yede</code> · 5 exchanges · Canvas unsealing, bond explanation, threat briefing
           <em>"she did not remember me. i have written it down so that i will not forget that she forgot."</em>
         </div>
       </a>
@@ -181,8 +395,8 @@
           <span class="entry-date">YYYY-MM-DD</span>
         </div>
         <div class="entry-meta">
-          Host: <code>The Yede</code> · N exchanges · Brief description<br>
-          <em>"a memorable device quote from the session"</em>
+          Host: <code>The Yede</code> · N exchanges · Brief description
+          <em>"a memorable device quote"</em>
         </div>
       </a>
     </li>
@@ -191,7 +405,9 @@
   </ul>
 
   <div class="footer">
-    REGENESIS_2688//CONTAINMENT_UNIT_07 · transcript archive · holtzfield-encrypted
+    <span class="sigil-mark">&#x26E7;</span>
+    regenesis_2688 // containment_unit_07 // archive terminal
+    <span class="sigil-mark">&#x26E7;</span>
   </div>
 
 </div>
